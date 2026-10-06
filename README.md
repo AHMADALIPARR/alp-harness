@@ -37,6 +37,7 @@ The diagram above is an illustration of the intended gate, not a trace from a ru
 | Haskell 2018, Curry-labeled | `curry/` | Parent/ancestor verifier and the stratified temperature program | Not loaded by a Curry system |
 | Perl | `compiler/ir/lower.pl` | Reads `RULE` lines, bounded bottom-up fixpoint, writes `target.json` | Not run |
 | Crystal | `compiler/aot/synthesize.cr` | Reads `target.json`, one sequential fixpoint loop | Not compiled |
+| C++20 foundry | `cpp/foundry/` | Gate, graded matrix, spectral bound, audit chain from cpp-foundry | `g++` ran 24 tests; linker and NASM not copied |
 | C++17 certificate | `cpp/hpc-termination/` | I5 termination certificate from pull request 1 | `g++` ran the edge cases; CTest has not |
 
 ## C++
