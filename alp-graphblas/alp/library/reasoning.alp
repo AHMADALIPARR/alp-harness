@@ -1,0 +1,8 @@
+% General-purpose derived relations. Load together with graph.alp.
+
+% Equivalence closure over same/2 facts.
+same(X,Y) <- same(Y,X).
+same(X,Z) <- same(X,Y), same(Y,Z).
+
+% Nodes with no path between them (negation as failure; stratified above reachable/2).
+unreachable(X,Y) <- node(X), node(Y), not reachable(X,Y).

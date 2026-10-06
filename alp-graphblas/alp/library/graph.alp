@@ -1,0 +1,12 @@
+% Graph predicates. Semantics match the GraphPredicateBridge:
+%   node/1, edge/2    extensional (supply edge/2 facts)
+%   connected/2       joined by an edge in either direction (symmetric closure of edge/2)
+%   reachable/2       transitive closure of edge/2 (path of one or more edges)
+%   path/2            same relation as reachable/2
+node(X) <- edge(X,_).
+node(Y) <- edge(_,Y).
+connected(X,Y) <- edge(X,Y).
+connected(X,Y) <- edge(Y,X).
+reachable(X,Y) <- edge(X,Y).
+reachable(X,Z) <- edge(X,Y), reachable(Y,Z).
+path(X,Y) <- reachable(X,Y).

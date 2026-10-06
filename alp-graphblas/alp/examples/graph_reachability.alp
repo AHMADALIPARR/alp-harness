@@ -1,0 +1,9 @@
+% Run: alp examples/graph_reachability.alp --query 'reachable(a,X)'
+%  or: alp examples/graph_reachability.alp --graph --query 'reachable(a,X)'
+edge(a,b).
+edge(b,c).
+edge(c,d).
+edge(a,e).
+edge(e,f).
+reachable(X,Y) <- edge(X,Y).
+reachable(X,Z) <- edge(X,Y), reachable(Y,Z).

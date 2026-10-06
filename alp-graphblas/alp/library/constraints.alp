@@ -1,0 +1,3 @@
+% Integrity constraints: a model violating any of these is rejected.
+false <- conflict(A), not permitted(A).
+false <- agent(A), action(A,X), forbidden(A,X), can_execute(A,X).

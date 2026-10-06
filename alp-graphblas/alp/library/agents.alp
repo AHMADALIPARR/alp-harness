@@ -1,0 +1,4 @@
+% Agent planning rules.
+agent_ready(A) <- agent(A), goal(A,_), belief(A,_).
+can_execute(A,X) <- agent(A), action(A,X), permitted(A,X).
+blocked(A,X) <- agent(A), action(A,X), not permitted(A,X).

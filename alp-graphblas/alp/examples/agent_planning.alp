@@ -1,0 +1,14 @@
+% Run: alp examples/agent_planning.alp --query 'can_execute(A,X)'
+agent(alice).
+agent(bob).
+goal(alice, deliver_report).
+belief(alice, report_written).
+action(alice, send_email).
+action(alice, delete_files).
+action(bob, send_email).
+permitted(alice, send_email).
+permitted(bob, send_email).
+
+agent_ready(A) <- agent(A), goal(A,G), belief(A,B).
+can_execute(A,X) <- agent(A), action(A,X), permitted(A,X).
+blocked(A,X) <- agent(A), action(A,X), not permitted(A,X).

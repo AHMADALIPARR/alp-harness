@@ -1,0 +1,5 @@
+% Default reasoning with negation as failure: a conclusion holds unless an
+% exception can be derived. Supply bird/1 and penguin/1 facts.
+bird(X) <- penguin(X).
+abnormal(X) <- penguin(X).
+flies(X) <- bird(X), not abnormal(X).

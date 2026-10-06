@@ -1,0 +1,6 @@
+% Default reasoning. Run: alp examples/birds.alp --query 'flies(X)'
+bird(tweety).
+penguin(pingu).
+bird(X) <- penguin(X).
+abnormal(X) <- penguin(X).
+flies(X) <- bird(X), not abnormal(X).

@@ -1,0 +1,19 @@
+% Abductive diagnosis. Run: alp examples/diagnosis.alp --abduce alarm
+% The fan and the coolant were observed to be fine, so only the wiring can explain the alarm.
+fan_ok.
+coolant_ok.
+alarm <- overheating.
+alarm <- short_circuit.
+overheating <- fan_failed.
+overheating <- coolant_leak.
+short_circuit <- frayed_wire.
+abducible(fan_failed).
+abducible(coolant_leak).
+abducible(frayed_wire).
+false <- fan_failed, fan_ok.
+false <- coolant_leak, coolant_ok.
+
+% Default reasoning with an abducible exception over a unary predicate:
+symptom(pump).
+faulty(X) <- symptom(X), not healthy(X).
+abducible(healthy/1).
