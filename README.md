@@ -23,6 +23,47 @@ This repository is a constraint harness. It is not one language, and it is not a
 
 The diagram above is an illustration of the intended gate, not a trace from a run. A Horn resolver derives a ground atom. A REQUIRE gate admits the next step only if that derivation succeeds. A semiring vector-matrix product then runs. The result is a vector. In this tree the C++ runtime does the derivation and the closure. The assembler members `src/horn/hornres.asm` and `src/alp/require.asm` are the same idea written for z/Architecture, and they have not been assembled.
 
+## Languages
+
+| Language | Tree | What it is | Status |
+| --- | --- | --- | --- |
+| C++20 | `alp-graphblas/` | Horn runtime, parser, abduction, reference closure, optional ALP/GraphBLAS backend | CTest has passed with ALP off |
+| Lean 4 | `lean/` | Finite speech-act fragment, `native_decide` on that fragment | Not built |
+| Prolog | `prolog/` | Agent kernel, prime-implicate engine, dialogue, felicity | Queries not run |
+| HLASM | `src/`, `jcl/` | Resolver, REQUIRE gate, sparse product | Not assembled |
+
+## C++
+
+The C++ project is `alp-graphblas/`. It is the only language in this repository with a configure, a build, and a test job. CMake 3.20 and a C++20 compiler are required. The default option `ALP_GRAPHBLAS_ENABLE` is on, and an on-build without an ALP install root fails at configure. The job that has passed uses the off switch.
+
+```sh
+cmake -S alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
+cmake --build build -j
+ctest --test-dir build --output-on-failure
+```
+
+That produces `build/alp` and the tests under `alp-graphblas/tests/`. Unification, the parser, Horn derivation, integrity, abduction, the reference graph, the integration test, and the two SNAPKITTYWEST cases are in that run. `tests/graphblas/graphblas_test.cpp` is not. It is added only when `-DALP_GRAPHBLAS_ENABLE=ON` and `-DALP_ROOT` points at an install that contains `include/graphblas.hpp`, `lib/libalp_utils`, and `lib/sequential/libgraphblas`.
+
+The libraries are `alp_logic` and `alp_graph`. `alp_logic` is terms, atoms, clauses, unification, the parser, the knowledge base, stratification, semi-naive evaluation, SLD, abduction, integrity, provenance, and serialization. `alp_graph` is the named graph, adjacency, the fixed-point closure, the predicate bridge, and, when enabled, `src/graph/graphblas_backend.cpp`. Headers live in `alp-graphblas/include/alp/`. The Lean file is not one of them. It was moved out of that directory.
+
+Programs are the `.alp` files in `alp-graphblas/alp/examples/` and `alp-graphblas/alp/library/`. A fact ends with a period. A rule uses `<-`. `not` is a negated body literal. `abducible` declares a predicate abduction may assume. `false <-` is an integrity constraint. The command is `build/alp`, with `--query`, `--abduce`, `--all`, `--proof`, `--graph`, and `--backend auto|reference|graphblas`. `--backend graphblas` in a binary built with the option off throws. It does not relabel the reference closure as a GraphBLAS result.
+
+Module notes are under [The C++ modules, one by one](#the-c-modules-one-by-one) and [The graph layer](#the-graph-layer). The GitHub job is [CTest](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml). Success there is the reference backend only.
+
+## Lean
+
+The Lean 4 fragment is `lean/SpeechActs.lean`. The package file is `lean/lakefile.lean`. The library name is `SpeechActs`. There are no imports. The namespace is `Dialogue`.
+
+It is a checked slice of `prolog/speech_acts.pl`, not a translation of `prolog/dialog_kb.pl`. Agents are guide, visitor, and guard. Topics are gold, route, and threat. Acts are greet, ask, tell, clarify, deny, and ack. `force` maps those acts onto Searle's classes. `felicitous` is content, preparatory, sincerity, and essential. `reply` tells when the hearer is competent and believes the answer form, clarifies when the hearer is not competent, and denies otherwise.
+
+The theorems are `rfl` or `native_decide` on that finite function. A guide who believes `locatedGold` gets a felicitous tell. A visitor who does not, does not. An ask about gold to the guide is a tell. An ask about threat to the guide is a clarify. Those equations do not certify the 5,441-line dialogue base.
+
+```sh
+cd lean && lake build
+```
+
+That command has not been run in this repository. A Lean 4 toolchain is required. Until `lake build` has passed, the theorems are source.
+
 ## What ALP means here
 
 ALP is not one language. Three published systems share the initials, and this repository uses all three on purpose. Treating them as one product is the mistake the earlier Python package made.
