@@ -94,7 +94,7 @@ The Lean file is a checked fragment of the speech-act rules, not a proof of the 
 
 ## What this repository contains
 
-The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `lean/SpeechActs.lean` and `lean/lakefile.lean` are the speech-act fragment. `asm/` is the assembler. `ABI.md` and `images/` are the note and the diagrams. `jcl/` holds the assemble and link job.
+The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `lean/SpeechActs.lean` and `lean/lakefile.lean` are the speech-act fragment. `asm/` is the assembler. `lean/ABI.md` and `images/` are the note and the diagrams. `jcl/` holds the assemble and link job.
 
 `cpp/alp-graphblas/src` is the C++ runtime. Terms, atoms, clauses, unification, a parser, a knowledge base, stratification, semi-naive evaluation, SLD with tabling, abduction, integrity constraints, provenance, and serialization live there. The graph side is a named directed graph, a CSR-style adjacency structure, a fixed-point closure, predicate bridges for `reachable/2`, and `src/graph/graphblas_backend.cpp`, which builds a Boolean matrix and closes it on `logical_or` and `logical_and` when ALP is enabled. `src/main.cpp` is the `alp` command. Programs in `cpp/alp-graphblas/alp/library` and `cpp/alp-graphblas/alp/examples` are the `.alp` sources: birds, wet grass, diagnosis, agent planning, and graph reachability.
 
@@ -104,7 +104,7 @@ The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be con
 
 `lean/SpeechActs.lean` is the fragment described above. `lean/lakefile.lean` names the library `SpeechActs`. It has not been built.
 
-`asm/lexer/alplex.asm` scans a buffer and rejects a broken `:-`. `asm/horn/hornres.asm` matches predicate and arity, unifies head arguments, resolves a body atom, treats a not-flag as negation as failure, and restores the binding stack on failure. Depth above 8 returns 72. `asm/sparse/vxmexec.asm` is the CSR product. `asm/gate/require.asm` calls the resolver and enters `VXMEXEC` only on return code 0. A resolution failure returns 32 and does not write the output. `ABI.md` is the calling convention. `jcl/assemble.jcl` is the job. `examples/legacy/shortest.alp` is a leftover example from before the C++ tree. It is not an input to the CMake project unless it happens to parse. Prefer the examples under `cpp/alp-graphblas/alp/examples`.
+`asm/lexer/alplex.asm` scans a buffer and rejects a broken `:-`. `asm/horn/hornres.asm` matches predicate and arity, unifies head arguments, resolves a body atom, treats a not-flag as negation as failure, and restores the binding stack on failure. Depth above 8 returns 72. `asm/sparse/vxmexec.asm` is the CSR product. `asm/gate/require.asm` calls the resolver and enters `VXMEXEC` only on return code 0. A resolution failure returns 32 and does not write the output. `lean/ABI.md` is the calling convention. `jcl/assemble.jcl` is the job. `examples/legacy/shortest.alp` is a leftover example from before the C++ tree. It is not an input to the CMake project unless it happens to parse. Prefer the examples under `cpp/alp-graphblas/alp/examples`.
 
 ## How a build is supposed to work
 
@@ -163,7 +163,7 @@ Assembler, on z/OS:
 //ASM     EXEC PGM=ASMA90,PARM='OBJECT,NODECK,XREF(SHORT)'
 ```
 
-The job in `jcl/assemble.jcl` assembles `ALPLEX` only. `HORNRES`, `VXMEXEC`, and `REQVXM` need the same procedure with their own SYSIN members. AMODE 64. R1 is the parameter, R13 the save area, R14 the return, R15 the entry and then the return code. R6 through R11 are preserved. Return codes: 0 success, 8 lexical, 24 unification failure, 28 resolution failure, 32 REQUIRE failure, 52 bad matrix, 56 bounds, 60 overflow, 68 storage, 72 step ceiling. The full table is `ABI.md`.
+The job in `jcl/assemble.jcl` assembles `ALPLEX` only. `HORNRES`, `VXMEXEC`, and `REQVXM` need the same procedure with their own SYSIN members. AMODE 64. R1 is the parameter, R13 the save area, R14 the return, R15 the entry and then the return code. R6 through R11 are preserved. Return codes: 0 success, 8 lexical, 24 unification failure, 28 resolution failure, 32 REQUIRE failure, 52 bad matrix, 56 bounds, 60 overflow, 68 storage, 72 step ceiling. The full table is `lean/ABI.md`.
 
 ## What has been run, and what has not
 
@@ -263,7 +263,7 @@ The atom the resolver expects is not a Prolog term. Offset 0 is a predicate id, 
 
 `VXMEXEC` compares the matrix column count to the vector dimension and returns 52 on mismatch. Row pointers, column indices, and values are doubleword arrays. The column index is scaled by 8. A column index at least the column count returns 56. A zero pointer at semiring offset 0 means signed minimum. A zero pointer at offset 16 means 64-bit add, with overflow returning 60. A non-zero pointer is `BASR`'d with R0 and R1 holding the operands and R0 returning the result. An empty row stores the doubleword at semiring offset 8.
 
-`ALPLEX` is a scan, not a parser. It recognizes space, a few punctuation marks, `:-`, and a percent comment to newline. An identifier is an alphabetic run. It does not yet classify keywords into the token types `ABI.md` lists. A full token stream with line and column is the layout in the old design note. The member stores a length and a pointer. Do not describe it as the C++ lexer.
+`ALPLEX` is a scan, not a parser. It recognizes space, a few punctuation marks, `:-`, and a percent comment to newline. An identifier is an alphabetic run. It does not yet classify keywords into the token types `lean/ABI.md` lists. A full token stream with line and column is the layout in the old design note. The member stores a length and a pointer. Do not describe it as the C++ lexer.
 
 ## Badges and diagrams
 
@@ -278,7 +278,7 @@ LICENSE                         AGPL-3.0-only grant
 README.md                       this file
 lean/SpeechActs.lean                 finite speech-act fragment
 lean/lakefile.lean                   Lean package file
-ABI.md                          assembler convention
+lean/ABI.md                          assembler convention
 images/                         diagrams for this README
 asm/lexer/alplex.asm            lexical scan
 asm/horn/hornres.asm            backward chaining
