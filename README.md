@@ -7,7 +7,9 @@
 [![CI](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml)
 [![CTest](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-informational)](cpp/alp-graphblas/CMakeLists.txt)
-[![Lean 4 fragment](https://img.shields.io/badge/Lean-4%20fragment-informational)](lean/SpeechActs.lean)
+[![Haskell 2018](https://img.shields.io/badge/Haskell-2018-informational)](compiler/verify/Horn.hs)
+[![Perl IR](https://img.shields.io/badge/Perl-IR-informational)](compiler/ir/lower.pl)
+[![Crystal](https://img.shields.io/badge/Crystal-fixpoint-informational)](compiler/aot/synthesize.cr)
 
 Copyright (C) 2026 Ahmad Ali Parr.
 
@@ -17,7 +19,7 @@ This program is free software: you can redistribute it and/or modify it under th
 
 There is no other license. The Apache-2.0 package that used to sit at the root was removed. The full Affero text is also in `cpp/alp-graphblas/LICENSE` because that subtree carries the FSF document. The root `LICENSE` is the version-3-only grant for the whole repository. A file with an SPDX header is under that grant. A file without a header is still under that grant. Do not add a second license notice.
 
-This repository is a constraint harness. It is not one language, and it is not a finished product. It holds four implementations of related ideas: a C++ Horn runtime that can call ALP/GraphBLAS, a Prolog agent kernel and dialogue layer, a small Lean 4 fragment of the speech-act rules, and an IBM HLASM sketch of the resolver and the sparse product. They do not yet call each other. The C++ tests have run on GitHub Actions without the ALP library. The Prolog goals have not been run here. The Lean file has not been checked with `lake`. The assembler has not been assembled.
+This repository is a constraint harness. It is not one language, and it is not a finished product. It holds a C++ Horn runtime that can call ALP/GraphBLAS, a separate C++17 termination certificate, a Prolog agent kernel and dialogue layer, a small Lean 4 fragment of the speech-act rules, an IBM HLASM sketch of the resolver and the sparse product, and a three-stage compiler: Haskell 2018 verification, a Perl IR, and a Crystal fixpoint. The Curry-labeled sources are the Haskell files in `curry/`. They do not yet call each other. The C++ reference tests have run on GitHub Actions without the ALP library. The I5 edge cases have been compiled with `g++` on one machine. The Prolog goals have not been run here. The Lean file has not been checked with `lake`. The assembler has not been assembled. The Haskell, Perl, and Crystal stages have not been compiled.
 
 ![Pipeline](images/pipeline.jpg)
 
@@ -31,6 +33,11 @@ The diagram above is an illustration of the intended gate, not a trace from a ru
 | Lean 4 | `lean/SpeechActs.lean`, `lean/lakefile.lean` | Finite speech-act fragment, `native_decide` on that fragment | Not built |
 | Prolog | `prolog/` | Agent kernel, prime-implicate engine, dialogue, felicity | Queries not run |
 | HLASM | `asm/`, `jcl/` | Resolver, REQUIRE gate, sparse product | Not assembled |
+| Haskell 2018 | `compiler/verify/Horn.hs` | Arity, range restriction, definedness, `RULE` emission | Not compiled |
+| Haskell 2018, Curry-labeled | `curry/` | Parent/ancestor verifier and the stratified temperature program | Not loaded by a Curry system |
+| Perl | `compiler/ir/lower.pl` | Reads `RULE` lines, bounded bottom-up fixpoint, writes `target.json` | Not run |
+| Crystal | `compiler/aot/synthesize.cr` | Reads `target.json`, one sequential fixpoint loop | Not compiled |
+| C++17 certificate | `cpp/hpc-termination/` | I5 termination certificate from pull request 1 | `g++` ran the edge cases; CTest has not |
 
 ## C++
 
@@ -63,6 +70,22 @@ cd lean && lake build
 ```
 
 That command has not been run in this repository. A Lean 4 toolchain is required. Until `cd lean && lake build` has passed, the theorems are source.
+
+## Haskell, Perl, and Crystal
+
+These three files are the compiler stages. They are in the tree. They have not been compiled or run.
+
+`compiler/verify/Horn.hs` is Haskell 2018. It checks arity, a non-empty head symbol, range restriction, and defined body predicates, then emits `RULE` lines. The demo program is `edge` and `path`. `curry/HornReingest.hs` is the parent, father, and ancestor program, with the ancestor base clause present. `curry/Stratified.hs` is the temperature and fan program. `gt` is a builtin name in the definedness check. The file does not evaluate `gt`. Both Curry-labeled files are Haskell text. There is no `.curry` file.
+
+`compiler/ir/lower.pl` reads `RULE` lines on standard input. It runs a bottom-up fixpoint capped at 10,000 rounds and 512 facts, prints the facts, and writes `target.json`. `compiler/aot/synthesize.cr` reads that file and repeats the fixpoint in one loop, with the same caps. The fiber version from the paste was not added.
+
+```sh
+runghc compiler/verify/Horn.hs
+perl compiler/ir/lower.pl < rules.ir
+crystal compiler/aot/synthesize.cr
+```
+
+None of those commands has been run here. `runghc`, `perl -c`, and `crystal` were not part of the commit that added the files.
 
 ## What ALP means here
 
