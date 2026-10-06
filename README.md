@@ -1,25 +1,7 @@
 # alp-harness
 
-A constraint harness with two program forms and one checker.
+IBM HLASM for z/Architecture. The Python package was removed. It was a string checker, not an assembler and not a resolver.
 
-The assembly section is the structured part of IBM's Assembly Language Processor: `IF`/`ELSE`/`ENDIF`, `WHILE`/`ENDWHILE`, and arithmetic. The algebraic lines are the ALP/GraphBLAS idea: a monoid is an associative operator with an identity, a semiring is a pair of those, and `VXM` or `REDUCE` must name a declared one.
+What is here is the native pipeline start: a lexical scan (`src/lexer/alplex.asm`), a backward-chaining resolver (`src/horn/hornres.asm`), and a sparse semiring vector-matrix step (`src/sparse/vxmexec.asm`). Layouts are in `dsects/layouts.asm`. The calling convention and return codes are in `docs/ABI.md`.
 
-The Horn section is definite clauses plus negation as failure. `REQUIRE atom` in the assembly section is accepted only when backward chaining derives that ground atom. A successful resolution is not a proof term, and `not` is not classical negation. Operator laws are a table.
-
-```
-HORN
-admin(ada, proj).
-plan(proj).
-can(U, P) :- admin(U, P), plan(P).
-ALP
-SEMIRING path min-plus
-REQUIRE can(ada,proj)
-VXM y, x, dist, path
-```
-
-```sh
-PYTHONPATH=src python -m alp_harness examples/policy.alp
-PYTHONPATH=src python -m unittest discover -s tests -v
-```
-
-This does not assemble x86 and does not run a sparse matrix kernel.
+This has not been assembled. It is not a 10,000-line program. Padding it to that count would be the same failure as the Python stub.
