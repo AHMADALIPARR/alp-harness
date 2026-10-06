@@ -1,4 +1,0 @@
-; Rejected: subtraction is not a monoid, and the IF is unclosed.
-MONOID bad sub
-IF flag
-MOV x, zero
