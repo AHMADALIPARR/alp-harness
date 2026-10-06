@@ -94,7 +94,7 @@ The Lean file is a checked fragment of the speech-act rules, not a proof of the 
 
 ## What this repository contains
 
-The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `SpeechActs.lean`, `lakefile.lean` is the speech-act fragment. `src/` is the assembler. `docs/` holds the ABI note and the diagrams. `jcl/` holds the assemble and link job.
+The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `SpeechActs.lean` and `lakefile.lean` are the speech-act fragment. `asm/` is the assembler. `ABI.md` and `images/` are the note and the diagrams. `jcl/` holds the assemble and link job.
 
 `cpp/alp-graphblas/src` is the C++ runtime. Terms, atoms, clauses, unification, a parser, a knowledge base, stratification, semi-naive evaluation, SLD with tabling, abduction, integrity constraints, provenance, and serialization live there. The graph side is a named directed graph, a CSR-style adjacency structure, a fixed-point closure, predicate bridges for `reachable/2`, and `src/graph/graphblas_backend.cpp`, which builds a Boolean matrix and closes it on `logical_or` and `logical_and` when ALP is enabled. `src/main.cpp` is the `alp` command. Programs in `cpp/alp-graphblas/alp/library` and `cpp/alp-graphblas/alp/examples` are the `.alp` sources: birds, wet grass, diagnosis, agent planning, and graph reachability.
 
@@ -276,8 +276,10 @@ The three images in `images/` were drawn for this README. They are not photograp
 ```text
 LICENSE                         AGPL-3.0-only grant
 README.md                       this file
-ABI.md                     assembler convention
-images/                    diagrams for this README
+SpeechActs.lean                 finite speech-act fragment
+lakefile.lean                   Lean package file
+ABI.md                          assembler convention
+images/                         diagrams for this README
 asm/lexer/alplex.asm            lexical scan
 asm/horn/hornres.asm            backward chaining
 asm/sparse/vxmexec.asm          semiring product
@@ -288,7 +290,7 @@ prolog/engine/                  prime-implicate do/1 and ?/1
 prolog/domains/                 patrol, sensing, maze
 prolog/dialogue/                knowledge base and felicity
 prolog/queries/                 unchecked goals
-lean/                           SpeechActs fragment and lakefile
+cpp/alp-graphblas/              CMake project, tested without ALP
 cpp/alp-graphblas/              CMake project, tested without ALP
 examples/legacy/shortest.alp    leftover, not the supported example path
 ```
