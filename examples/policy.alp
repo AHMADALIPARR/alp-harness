@@ -1,8 +1,0 @@
-HORN
-admin(ada, proj).
-plan(proj).
-can(U, P) :- admin(U, P), plan(P).
-ALP
-SEMIRING path min-plus
-REQUIRE can(ada,proj)
-VXM y, x, dist, path
