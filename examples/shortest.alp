@@ -1,0 +1,10 @@
+; Shortest-path step. Structured like IBM ALP, constrained like ALP/GraphBLAS.
+SEMIRING path min-plus
+MONOID span min
+MOV x, inf
+IF start
+  MOV x, zero
+ENDIF
+VXM y, x, dist, path
+REDUCE best, y, span
+REORDER span
