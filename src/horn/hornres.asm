@@ -9,6 +9,8 @@ HORNRES  RMODE ANY
 * Atom +0 predicate, +8 arity, +12 not-flag, +16 arg0, +24 arg1.
 * Term +0 kind (1 constant, 2 variable), +8 identity.
 * Clause +0 head, +8 body atom or zero, +24 next.
+* A failed clause restores R3 to the mark taken before that clause.
+* A failed call restores R3 to the mark taken on entry.
 * 0 derived, 28 not derived, 72 depth ceiling.
 * not-flag 1 is negation as failure: success when the inner goal fails.
          SAVE  (14,12)
@@ -19,6 +21,8 @@ HORNRES  RMODE ANY
          CHI   6,8
          BH    HCEIL
          ST    6,DEPTH
+         SLLG  0,6,3
+         STG   3,ENTRYB(0)
          STG   2,BASE
          L     7,12(1)
          CHI   7,1
@@ -36,6 +40,9 @@ SCAN     LG    2,BASE
          L     5,8(1)
 NEXT     LTR   2,2
          BZ    HFAIL
+         L     0,DEPTH
+         SLLG  0,0,3
+         STG   3,MARKS(0)
          LG    6,0(2)
          LTR   6,6
          BZ    ADVANCE
@@ -71,7 +78,10 @@ ONEARG   LG    11,8(2)
          LG    2,CSAVE
          LTR   15,15
          BZ    HOK
-ADVANCE  LG    2,24(2)
+ADVANCE  L     0,DEPTH
+         SLLG  0,0,3
+         LG    3,MARKS(0)
+         LG    2,24(2)
          B     NEXT
 UNIFY    LG    6,0(9)
          LG    7,0(10)
@@ -99,7 +109,10 @@ HCEIL    LGHI  15,72
          B     HOUT
 HOK      LGHI  15,0
          B     HOUT
-HFAIL    LGHI  15,28
+HFAIL    L     6,DEPTH
+         SLLG  0,6,3
+         LG    3,ENTRYB(0)
+         LGHI  15,28
 HOUT     L     6,DEPTH
          AHI   6,-1
          ST    6,DEPTH
@@ -108,4 +121,6 @@ DEPTH    DC    F'0'
 BASE     DS    D
 QSAVE    DS    D
 CSAVE    DS    D
+ENTRYB   DS    8D
+MARKS    DS    8D
          END   HORNRES

@@ -126,15 +126,6 @@ exec(if(Cond, Then, Else), S, S2, H) :-
     ;   exec(Else, S, S2, H)
     ).
 
-exec(while(Cond, Body), S, S2, H) :-
-    (   holds(Cond, S)
-    ->  exec(Body, S, S1, H1),
-        exec(while(Cond, Body), S1, S2, H2),
-        append(H1, H2, H)
-    ;   S2 = S,
-        H = []
-    ).
-
 exec(prim(A), S, S2, [A]) :-
     poss(A, S),
     result(A, S, S2).
@@ -147,11 +138,45 @@ exec(call(Name), S, S2, H) :-
     agent_proc(Name, Body),
     exec(Body, S, S2, H).
 
-exec(star(P), S, S2, H) :-
-    exec(P, S, S1, H1),
-    exec(star(P), S1, S2, H2),
+step_limit(64).
+
+exec(while(Cond, Body), S, S2, H) :-
+    step_limit(Lim),
+    exec_while(Cond, Body, S, S2, H, 0, Lim).
+exec(while(Cond, Body), S, S2, H) :-
+    \+ holds(Cond, S),
+    S2 = S,
+    H = [].
+
+exec_while(_, _, _, _, _, N, Lim) :-
+    N >= Lim,
+    !,
+    throw(execution_limit_exceeded(Lim)).
+exec_while(Cond, Body, S, S2, H, N, Lim) :-
+    holds(Cond, S),
+    !,
+    N1 is N + 1,
+    exec(Body, S, S1, H1),
+    exec_while(Cond, Body, S1, S2, H2, N1, Lim),
     append(H1, H2, H).
+exec_while(_, _, S, S, [], _, _).
+
+exec(star(P), S, S2, H) :-
+    step_limit(Lim),
+    exec_star(P, S, S2, H, 0, Lim).
 exec(star(_), S, S, []).
+
+exec_star(_, _, _, _, N, Lim) :-
+    N >= Lim,
+    !,
+    throw(execution_limit_exceeded(Lim)).
+exec_star(P, S, S2, H, N, Lim) :-
+    N1 is N + 1,
+    exec(P, S, S1, H1),
+    H1 \== [],
+    exec_star(P, S1, S2, H2, N1, Lim),
+    append(H1, H2, H).
+exec_star(_, S, S, [], _, _).
 
 trans_b(prim(A), BS, A, nil) :-
     k_poss(A, BS).
@@ -210,14 +235,23 @@ simplify(P, BS, P1) :-
 simplify(P, _, P).
 
 exec_online(P, RealS, BS, FinalS, H) :-
+    step_limit(Lim),
+    exec_online(P, RealS, BS, FinalS, H, 0, Lim).
+
+exec_online(_, _, _, _, _, N, Lim) :-
+    N >= Lim,
+    !,
+    throw(execution_limit_exceeded(Lim)).
+exec_online(P, RealS, BS, FinalS, H, N, Lim) :-
     simplify(P, BS, P1),
     (   P1 == nil
     ->  FinalS = RealS,
         H = []
-    ;   trans_b(P1, BS, A, P2),
+    ;   N1 is N + 1,
+        trans_b(P1, BS, A, P2),
         result(A, RealS, RealS1),
         update_belief(A, BS, BS1),
         sense_update(A, RealS1, BS1, BS2),
-        exec_online(P2, RealS1, BS2, FinalS, H1),
+        exec_online(P2, RealS1, BS2, FinalS, H1, N1, Lim),
         H = [A|H1]
     ).
