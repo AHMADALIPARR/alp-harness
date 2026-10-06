@@ -23,7 +23,7 @@ ctest --test-dir build/hpc --output-on-failure
 
 Say what the source does. Say which command was run, and on which commit. Do not call a `native_decide` equation a proof of `prolog/dialogue/dialog_kb.pl`. Do not call the Kahn sort in `curry/Stratified.hs` an evaluation of `gt`. Do not call the assembler assembled. Do not call the reference closure a GraphBLAS result.
 
-A termination certificate from `certify` is a rejection or an admission under the checks in `cpp/hpc-termination/src/termination.cpp`. It is not a proof that a bottom-up engine terminates on every input. A function term that appears only in a rule body is not rejected. That is the current rule. A test that records it is a regression test, not a claim that the rule is the one you want.
+A termination certificate from `certify` is a rejection or an admission under the checks in `cpp/hpc-termination/src/termination.cpp`. It is not a proof that a bottom-up engine terminates on every input. A function term that appears only in a rule body is not rejected. A positive comparison atom is also a binder, so `gt(U, 90)` currently admits `U`. A test that records either fact is a regression test, not a claim that the rule is the one you want.
 
 ## Reporting a bug
 
