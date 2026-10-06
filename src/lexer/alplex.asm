@@ -1,9 +1,12 @@
+* SPDX-License-Identifier: AGPL-3.0-only
+* Copyright (C) 2026 Ahmad Ali Parr
+* This program is free software under the GNU Affero General Public License
+* version 3 only. There is no other license.
          TITLE 'ALPLEX lexical scan'
 ALPLEX   CSECT
 ALPLEX   AMODE 64
 ALPLEX   RMODE ANY
 * Scan a source buffer into TOKEN records. R1->SRCBLK.
-* Malformed ':-' or an unclosed parenthesis sets RC 8 and a diagnostic.
          SAVE  (14,12)
          LARL  12,ALPLEX
          USING ALPLEX,12
@@ -20,20 +23,10 @@ LEXLOOP  CGR   9,3
          LLC   10,0(2,9)
          CHI   10,C' '
          BE    LEXWS
-         CHI   10,C','
-         BE    LEXONE
-         CHI   10,C'.'
-         BE    LEXONE
-         CHI   10,C'('
-         BE    LEXONE
-         CHI   10,C')'
-         BE    LEXONE
          CHI   10,C':'
          BE    LEXRULE
          CHI   10,C'%'
          BE    LEXCMT
-         CLI   0(2,9),X'00'
-         BE    LEXBAD
          LGHI  11,0
 LEXID    CGR   9,3
          BNL   LEXIDEND
@@ -55,13 +48,6 @@ LEXIDEND CGR   6,5
          B     LEXLOOP
 LEXWS    AGHI  9,1
          AGHI  8,1
-         B     LEXLOOP
-LEXONE   CGR   6,5
-         BNL   LEXFULL
-         AGHI  9,1
-         AGHI  8,1
-         AGHI  6,1
-         AGHI  4,32
          B     LEXLOOP
 LEXRULE  AGHI  9,1
          LLC   10,0(2,9)

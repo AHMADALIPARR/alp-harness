@@ -1,10 +1,13 @@
+* SPDX-License-Identifier: AGPL-3.0-only
+* Copyright (C) 2026 Ahmad Ali Parr
+* This program is free software under the GNU Affero General Public License
+* version 3 only. There is no other license.
          TITLE 'VXMEXEC semiring sparse product'
 VXMEXEC  CSECT
 VXMEXEC  AMODE 64
 VXMEXEC  RMODE ANY
 * R1->output vector, R2->input vector, R3->CSR matrix, R4->semiring.
 * min-plus: combine is 64-bit add, accumulate is signed minimum.
-* Empty row writes the additive identity. Bounds failure is RC 56.
          SAVE  (14,12)
          LARL  12,VXMEXEC
          USING VXMEXEC,12
