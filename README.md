@@ -7,7 +7,7 @@
 [![CI](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml)
 [![CTest](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml)
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-informational)](cpp/alp-graphblas/CMakeLists.txt)
-[![Lean 4 fragment](https://img.shields.io/badge/Lean-4%20fragment-informational)](SpeechActs.lean)
+[![Lean 4 fragment](https://img.shields.io/badge/Lean-4%20fragment-informational)](lean/SpeechActs.lean)
 
 Copyright (C) 2026 Ahmad Ali Parr.
 
@@ -28,7 +28,7 @@ The diagram above is an illustration of the intended gate, not a trace from a ru
 | Language | Tree | What it is | Status |
 | --- | --- | --- | --- |
 | C++20 | `cpp/alp-graphblas/` | Horn runtime, parser, abduction, reference closure, optional ALP/GraphBLAS backend | CTest has passed with ALP off |
-| Lean 4 | `SpeechActs.lean`, `lakefile.lean` | Finite speech-act fragment, `native_decide` on that fragment | Not built |
+| Lean 4 | `lean/SpeechActs.lean`, `lean/lakefile.lean` | Finite speech-act fragment, `native_decide` on that fragment | Not built |
 | Prolog | `prolog/` | Agent kernel, prime-implicate engine, dialogue, felicity | Queries not run |
 | HLASM | `asm/`, `jcl/` | Resolver, REQUIRE gate, sparse product | Not assembled |
 
@@ -52,17 +52,17 @@ Module notes are under [The C++ modules, one by one](#the-c-modules-one-by-one) 
 
 ## Lean
 
-The Lean 4 fragment is `SpeechActs.lean`. The package file is `lakefile.lean`. The library name is `SpeechActs`. There are no imports. The namespace is `Dialogue`.
+The Lean 4 fragment is `lean/SpeechActs.lean`. The package file is `lean/lakefile.lean`. The library name is `SpeechActs`. There are no imports. The namespace is `Dialogue`.
 
 It is a checked slice of `prolog/dialogue/speech_acts.pl`, not a translation of `prolog/dialogue/dialog_kb.pl`. Agents are guide, visitor, and guard. Topics are gold, route, and threat. Acts are greet, ask, tell, clarify, deny, and ack. `force` maps those acts onto Searle's classes. `felicitous` is content, preparatory, sincerity, and essential. `reply` tells when the hearer is competent and believes the answer form, clarifies when the hearer is not competent, and denies otherwise.
 
 The theorems are `rfl` or `native_decide` on that finite function. A guide who believes `locatedGold` gets a felicitous tell. A visitor who does not, does not. An ask about gold to the guide is a tell. An ask about threat to the guide is a clarify. Those equations do not certify the 5,441-line dialogue base.
 
 ```sh
-lake build
+cd lean && lake build
 ```
 
-That command has not been run in this repository. A Lean 4 toolchain is required. Until `lake build` has passed, the theorems are source.
+That command has not been run in this repository. A Lean 4 toolchain is required. Until `cd lean && lake build` has passed, the theorems are source.
 
 ## What ALP means here
 
@@ -94,7 +94,7 @@ The Lean file is a checked fragment of the speech-act rules, not a proof of the 
 
 ## What this repository contains
 
-The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `SpeechActs.lean` and `lakefile.lean` are the speech-act fragment. `asm/` is the assembler. `ABI.md` and `images/` are the note and the diagrams. `jcl/` holds the assemble and link job.
+The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `lean/SpeechActs.lean` and `lean/lakefile.lean` are the speech-act fragment. `asm/` is the assembler. `ABI.md` and `images/` are the note and the diagrams. `jcl/` holds the assemble and link job.
 
 `cpp/alp-graphblas/src` is the C++ runtime. Terms, atoms, clauses, unification, a parser, a knowledge base, stratification, semi-naive evaluation, SLD with tabling, abduction, integrity constraints, provenance, and serialization live there. The graph side is a named directed graph, a CSR-style adjacency structure, a fixed-point closure, predicate bridges for `reachable/2`, and `src/graph/graphblas_backend.cpp`, which builds a Boolean matrix and closes it on `logical_or` and `logical_and` when ALP is enabled. `src/main.cpp` is the `alp` command. Programs in `cpp/alp-graphblas/alp/library` and `cpp/alp-graphblas/alp/examples` are the `.alp` sources: birds, wet grass, diagnosis, agent planning, and graph reachability.
 
@@ -102,7 +102,7 @@ The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be con
 
 `prolog/kernel/alp_kernel.pl` is the recursive kernel: `holds/2`, `k_holds/2`, `exec/4`, `exec_online/5`, belief update, and a step ceiling of 64. Past the ceiling it throws `execution_limit_exceeded`. `prolog/engine/alpprolog.pl` is the prime-implicate engine: `alp_run/1`, `?/1`, `do/1`, progression, sensing. `prolog/patrol.pl` is the left, middle, right domain. `prolog/sensing.pl` is the stench fragment. `prolog/maze.pl` is the four-cell gold strategy. `prolog/dialogue/dialog_kb.pl` is the speech-act knowledge base, 5,441 lines, ending at `expanded_clauses_marker(3844)`. `prolog/dialogue/speech_acts.pl` is the felicity layer: content, preparatory, sincerity, essential. `reply_sa/4` is `reply/4` plus `felicitous/1`. `prolog/queries/` holds goals for sensing, the maze, the ceiling, and one dialogue step that stores `gold_at` with `set_fluent`. Those goals have not been executed in this workspace.
 
-`SpeechActs.lean` is the fragment described above. `lakefile.lean` names the library `SpeechActs`. It has not been built.
+`lean/SpeechActs.lean` is the fragment described above. `lean/lakefile.lean` names the library `SpeechActs`. It has not been built.
 
 `asm/lexer/alplex.asm` scans a buffer and rejects a broken `:-`. `asm/horn/hornres.asm` matches predicate and arity, unifies head arguments, resolves a body atom, treats a not-flag as negation as failure, and restores the binding stack on failure. Depth above 8 returns 72. `asm/sparse/vxmexec.asm` is the CSR product. `asm/gate/require.asm` calls the resolver and enters `VXMEXEC` only on return code 0. A resolution failure returns 32 and does not write the output. `ABI.md` is the calling convention. `jcl/assemble.jcl` is the job. `examples/legacy/shortest.alp` is a leftover example from before the C++ tree. It is not an input to the CMake project unless it happens to parse. Prefer the examples under `cpp/alp-graphblas/alp/examples`.
 
@@ -151,7 +151,7 @@ Prolog is load order, not a build.
 Lean, when a toolchain is present:
 
 ```sh
-lake build
+cd lean && lake build
 ```
 
 That has not been run. `native_decide` will fail if the toolchain rejects those proofs. Until it has been run, the theorems are source.
@@ -185,7 +185,7 @@ The picture is a sketch of greet, ask, and tell, with a felicity check on the te
 
 `prolog/dialogue/speech_acts.pl` follows Searle's four conditions. Propositional content says what kind of formula the act may carry. A tell needs a proposition. An ask needs a question and a topic. Preparatory conditions say what must already be true: a teller must be competent on the topic of the formula, a clarify must come from someone who is not competent, an offer must not be believed prohibited. Sincerity says the speaker believes the content of a tell, and does not believe the content of a deny. Essential says the act counts as an attempt to get the hearer to recognise the point: truth, an answer, a transfer, contact, uptake, or end. `counts_as/3` only requires two distinct agents. It does not model recognition. `felicitous/1` is the conjunction. `reply_sa/4` drops a reply that fails it. `uptake/2` records common ground, not private belief. `perlocution/3` records the aim and does not execute it.
 
-The Lean fragment checks the finite slice. A guide who believes `locatedGold` and is competent on gold gets a felicitous tell. A visitor who does not believe it does not. An ask about gold to the guide is a tell, not a clarify. An ask about threat to the guide is a clarify, because the guide is not competent on threat in that file. Those are the theorems in `SpeechActs.lean`.
+The Lean fragment checks the finite slice. A guide who believes `locatedGold` and is competent on gold gets a felicitous tell. A visitor who does not believe it does not. An ask about gold to the guide is a tell, not a clarify. An ask about threat to the guide is a clarify, because the guide is not competent on threat in that file. Those are the theorems in `lean/SpeechActs.lean`.
 
 ## Production status
 
@@ -267,7 +267,7 @@ The atom the resolver expects is not a Prolog term. Offset 0 is a predicate id, 
 
 ## Badges and diagrams
 
-The license badge points at `LICENSE`. The CI badge is the tree check. The CTest badge is the reference build. A green CTest badge means that job passed on the commit GitHub last built. It does not follow a local edit. The C++20 badge names the standard in `CMakeLists.txt`. The Lean badge names the fragment. It does not mean `lake build` has passed.
+The license badge points at `LICENSE`. The CI badge is the tree check. The CTest badge is the reference build. A green CTest badge means that job passed on the commit GitHub last built. It does not follow a local edit. The C++20 badge names the standard in `CMakeLists.txt`. The Lean badge names the fragment. It does not mean `cd lean && lake build` has passed.
 
 The three images in `images/` were drawn for this README. They are not photographs of a mainframe, not a dump of a GraphBLAS matrix, and not a log of a dialogue. `pipeline.jpg` is the gate. `minplus.jpg` is the algebra of the assembler product. `speech.jpg` is greet, ask, tell, and a felicity check. If a number in the min-plus drawing disagrees with a test, the test wins.
 
@@ -276,8 +276,8 @@ The three images in `images/` were drawn for this README. They are not photograp
 ```text
 LICENSE                         AGPL-3.0-only grant
 README.md                       this file
-SpeechActs.lean                 finite speech-act fragment
-lakefile.lean                   Lean package file
+lean/SpeechActs.lean                 finite speech-act fragment
+lean/lakefile.lean                   Lean package file
 ABI.md                          assembler convention
 images/                         diagrams for this README
 asm/lexer/alplex.asm            lexical scan
