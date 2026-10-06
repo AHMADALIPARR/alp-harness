@@ -1,3 +1,6 @@
+//* SPDX-License-Identifier: AGPL-3.0-only
+//* Copyright (C) 2026 Ahmad Ali Parr
+//* GNU Affero General Public License version 3 only.
 //ALPASM  JOB (ALP),'ASSEMBLE HARNESS',CLASS=A,MSGCLASS=X
 //ASM     EXEC PGM=ASMA90,PARM='OBJECT,NODECK,XREF(SHORT)'
 //SYSLIB   DD  DSN=SYS1.MACLIB,DISP=SHR
