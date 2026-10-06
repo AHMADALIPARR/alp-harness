@@ -14,3 +14,5 @@ Three stages, not wired to `cpp/alp-graphblas` or the assembler.
 The incomplete tabled engine, with `evaluate` returning an empty list, was not added.
 
 None of these files has been compiled or run in this repository.
+
+The I5 termination package from SNAPKITTYWEST pull request 1 is `cpp/hpc-termination/`. It is a separate CMake project. It has not been built here.
