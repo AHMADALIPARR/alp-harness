@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure without ALP/GraphBLAS
-        run: cmake -S alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
+        run: cmake -S cpp/alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
       - name: Build
         run: cmake --build build -j
       - name: Test

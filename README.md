@@ -6,7 +6,7 @@
 [![AGPL-3.0-only](https://img.shields.io/badge/license-AGPL--3.0--only-blue)](LICENSE)
 [![CI](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ci.yml)
 [![CTest](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml/badge.svg)](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml)
-[![C++20](https://img.shields.io/badge/C%2B%2B-20-informational)](alp-graphblas/CMakeLists.txt)
+[![C++20](https://img.shields.io/badge/C%2B%2B-20-informational)](cpp/alp-graphblas/CMakeLists.txt)
 [![Lean 4 fragment](https://img.shields.io/badge/Lean-4%20fragment-informational)](lean/SpeechActs.lean)
 
 Copyright (C) 2026 Ahmad Ali Parr.
@@ -15,38 +15,38 @@ This program is free software: you can redistribute it and/or modify it under th
 
 `SPDX-License-Identifier: AGPL-3.0-only`
 
-There is no other license. The Apache-2.0 package that used to sit at the root was removed. The full Affero text is also in `alp-graphblas/LICENSE` because that subtree carries the FSF document. The root `LICENSE` is the version-3-only grant for the whole repository. A file with an SPDX header is under that grant. A file without a header is still under that grant. Do not add a second license notice.
+There is no other license. The Apache-2.0 package that used to sit at the root was removed. The full Affero text is also in `cpp/alp-graphblas/LICENSE` because that subtree carries the FSF document. The root `LICENSE` is the version-3-only grant for the whole repository. A file with an SPDX header is under that grant. A file without a header is still under that grant. Do not add a second license notice.
 
 This repository is a constraint harness. It is not one language, and it is not a finished product. It holds four implementations of related ideas: a C++ Horn runtime that can call ALP/GraphBLAS, a Prolog agent kernel and dialogue layer, a small Lean 4 fragment of the speech-act rules, and an IBM HLASM sketch of the resolver and the sparse product. They do not yet call each other. The C++ tests have run on GitHub Actions without the ALP library. The Prolog goals have not been run here. The Lean file has not been checked with `lake`. The assembler has not been assembled.
 
 ![Pipeline](docs/images/pipeline.jpg)
 
-The diagram above is an illustration of the intended gate, not a trace from a run. A Horn resolver derives a ground atom. A REQUIRE gate admits the next step only if that derivation succeeds. A semiring vector-matrix product then runs. The result is a vector. In this tree the C++ runtime does the derivation and the closure. The assembler members `src/horn/hornres.asm` and `src/alp/require.asm` are the same idea written for z/Architecture, and they have not been assembled.
+The diagram above is an illustration of the intended gate, not a trace from a run. A Horn resolver derives a ground atom. A REQUIRE gate admits the next step only if that derivation succeeds. A semiring vector-matrix product then runs. The result is a vector. In this tree the C++ runtime does the derivation and the closure. The assembler members `asm/horn/hornres.asm` and `asm/gate/require.asm` are the same idea written for z/Architecture, and they have not been assembled.
 
 ## Languages
 
 | Language | Tree | What it is | Status |
 | --- | --- | --- | --- |
-| C++20 | `alp-graphblas/` | Horn runtime, parser, abduction, reference closure, optional ALP/GraphBLAS backend | CTest has passed with ALP off |
+| C++20 | `cpp/alp-graphblas/` | Horn runtime, parser, abduction, reference closure, optional ALP/GraphBLAS backend | CTest has passed with ALP off |
 | Lean 4 | `lean/` | Finite speech-act fragment, `native_decide` on that fragment | Not built |
 | Prolog | `prolog/` | Agent kernel, prime-implicate engine, dialogue, felicity | Queries not run |
-| HLASM | `src/`, `jcl/` | Resolver, REQUIRE gate, sparse product | Not assembled |
+| HLASM | `asm/`, `jcl/` | Resolver, REQUIRE gate, sparse product | Not assembled |
 
 ## C++
 
-The C++ project is `alp-graphblas/`. It is the only language in this repository with a configure, a build, and a test job. CMake 3.20 and a C++20 compiler are required. The default option `ALP_GRAPHBLAS_ENABLE` is on, and an on-build without an ALP install root fails at configure. The job that has passed uses the off switch.
+The C++ project is `cpp/alp-graphblas/`. It is the only language in this repository with a configure, a build, and a test job. CMake 3.20 and a C++20 compiler are required. The default option `ALP_GRAPHBLAS_ENABLE` is on, and an on-build without an ALP install root fails at configure. The job that has passed uses the off switch.
 
 ```sh
-cmake -S alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
+cmake -S cpp/alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
 
-That produces `build/alp` and the tests under `alp-graphblas/tests/`. Unification, the parser, Horn derivation, integrity, abduction, the reference graph, the integration test, and the two SNAPKITTYWEST cases are in that run. `tests/graphblas/graphblas_test.cpp` is not. It is added only when `-DALP_GRAPHBLAS_ENABLE=ON` and `-DALP_ROOT` points at an install that contains `include/graphblas.hpp`, `lib/libalp_utils`, and `lib/sequential/libgraphblas`.
+That produces `build/alp` and the tests under `cpp/alp-graphblas/tests/`. Unification, the parser, Horn derivation, integrity, abduction, the reference graph, the integration test, and the two SNAPKITTYWEST cases are in that run. `tests/graphblas/graphblas_test.cpp` is not. It is added only when `-DALP_GRAPHBLAS_ENABLE=ON` and `-DALP_ROOT` points at an install that contains `include/graphblas.hpp`, `lib/libalp_utils`, and `lib/sequential/libgraphblas`.
 
-The libraries are `alp_logic` and `alp_graph`. `alp_logic` is terms, atoms, clauses, unification, the parser, the knowledge base, stratification, semi-naive evaluation, SLD, abduction, integrity, provenance, and serialization. `alp_graph` is the named graph, adjacency, the fixed-point closure, the predicate bridge, and, when enabled, `src/graph/graphblas_backend.cpp`. Headers live in `alp-graphblas/include/alp/`. The Lean file is not one of them. It was moved out of that directory.
+The libraries are `alp_logic` and `alp_graph`. `alp_logic` is terms, atoms, clauses, unification, the parser, the knowledge base, stratification, semi-naive evaluation, SLD, abduction, integrity, provenance, and serialization. `alp_graph` is the named graph, adjacency, the fixed-point closure, the predicate bridge, and, when enabled, `src/graph/graphblas_backend.cpp`. Headers live in `cpp/alp-graphblas/include/alp/`. The Lean file is not one of them. It was moved out of that directory.
 
-Programs are the `.alp` files in `alp-graphblas/alp/examples/` and `alp-graphblas/alp/library/`. A fact ends with a period. A rule uses `<-`. `not` is a negated body literal. `abducible` declares a predicate abduction may assume. `false <-` is an integrity constraint. The command is `build/alp`, with `--query`, `--abduce`, `--all`, `--proof`, `--graph`, and `--backend auto|reference|graphblas`. `--backend graphblas` in a binary built with the option off throws. It does not relabel the reference closure as a GraphBLAS result.
+Programs are the `.alp` files in `cpp/alp-graphblas/alp/examples/` and `cpp/alp-graphblas/alp/library/`. A fact ends with a period. A rule uses `<-`. `not` is a negated body literal. `abducible` declares a predicate abduction may assume. `false <-` is an integrity constraint. The command is `build/alp`, with `--query`, `--abduce`, `--all`, `--proof`, `--graph`, and `--backend auto|reference|graphblas`. `--backend graphblas` in a binary built with the option off throws. It does not relabel the reference closure as a GraphBLAS result.
 
 Module notes are under [The C++ modules, one by one](#the-c-modules-one-by-one) and [The graph layer](#the-graph-layer). The GitHub job is [CTest](https://github.com/AHMADALIPARR/alp-harness/actions/workflows/ctest.yml). Success there is the reference backend only.
 
@@ -54,7 +54,7 @@ Module notes are under [The C++ modules, one by one](#the-c-modules-one-by-one) 
 
 The Lean 4 fragment is `lean/SpeechActs.lean`. The package file is `lean/lakefile.lean`. The library name is `SpeechActs`. There are no imports. The namespace is `Dialogue`.
 
-It is a checked slice of `prolog/speech_acts.pl`, not a translation of `prolog/dialog_kb.pl`. Agents are guide, visitor, and guard. Topics are gold, route, and threat. Acts are greet, ask, tell, clarify, deny, and ack. `force` maps those acts onto Searle's classes. `felicitous` is content, preparatory, sincerity, and essential. `reply` tells when the hearer is competent and believes the answer form, clarifies when the hearer is not competent, and denies otherwise.
+It is a checked slice of `prolog/dialogue/speech_acts.pl`, not a translation of `prolog/dialogue/dialog_kb.pl`. Agents are guide, visitor, and guard. Topics are gold, route, and threat. Acts are greet, ask, tell, clarify, deny, and ack. `force` maps those acts onto Searle's classes. `felicitous` is content, preparatory, sincerity, and essential. `reply` tells when the hearer is competent and believes the answer form, clarifies when the hearer is not competent, and denies otherwise.
 
 The theorems are `rfl` or `native_decide` on that finite function. A guide who believes `locatedGold` gets a felicitous tell. A visitor who does not, does not. An ask about gold to the guide is a tell. An ask about threat to the guide is a clarify. Those equations do not certify the 5,441-line dialogue base.
 
@@ -72,7 +72,7 @@ The first is IBM Assembly Language Processor. It is the OS/2 and z/OS High Level
 
 The second is ALP/GraphBLAS, the C++17 library from Huawei Zurich. It implements the GraphBLAS algebra on semirings. A matrix-vector product is not hard-wired to ordinary arithmetic. Multiplication and addition are the semiring operations. For reachability the semiring is Boolean: or as addition, and as multiplication. For shortest paths the semiring is min-plus: addition of weights as multiplication, minimum as addition. The header the backend includes is `graphblas.hpp`. The types are `grb::Matrix`, `grb::Semiring`, and `grb::buildMatrixUnique`. That library is not vendored here. The CMake option `ALP_GRAPHBLAS_ENABLE` defaults to on, and an on-build without `ALP_ROOT` is a fatal configure error. The reference closure in `src/graph/fixed_point.cpp` is the path that runs without that library. It is the oracle, not a substitute for a production GraphBLAS build.
 
-The third is ALPprolog, the agent language of Drescher and Thielscher. A program is a term: `nil`, `prim(A)`, `sense(A)`, `seq(P,Q)`, `choice(P,Q)`, `if(Cond,Then,Else)`, `while(Cond,Body)`, `star(P)`, `call(Name)`. An offline interpreter `exec/4` runs it against one state. An online interpreter `exec_online/5` runs it against a belief state, a non-empty list of possible states, and updates that list when an action senses. `prolog/alpprolog.pl` is the prime-implicate engine used by the maze and the stench fragment: `do/1`, `?/1`, progression, and sensing. `prolog/alp_kernel.pl` is the recursive kernel used by the patrol domain and the dialogue step. They are not the same interpreter. Do not load them together. Do not load `maze.pl` with `patrol.pl`. Both define a domain.
+The third is ALPprolog, the agent language of Drescher and Thielscher. A program is a term: `nil`, `prim(A)`, `sense(A)`, `seq(P,Q)`, `choice(P,Q)`, `if(Cond,Then,Else)`, `while(Cond,Body)`, `star(P)`, `call(Name)`. An offline interpreter `exec/4` runs it against one state. An online interpreter `exec_online/5` runs it against a belief state, a non-empty list of possible states, and updates that list when an action senses. `prolog/engine/alpprolog.pl` is the prime-implicate engine used by the maze and the stench fragment: `do/1`, `?/1`, progression, and sensing. `prolog/kernel/alp_kernel.pl` is the recursive kernel used by the patrol domain and the dialogue step. They are not the same interpreter. Do not load them together. Do not load `maze.pl` with `patrol.pl`. Both define a domain.
 
 The harness exists because those three systems answer different parts of one question. GraphBLAS computes a product. It does not know whether the caller is allowed to run it. Horn clauses can derive `can(ada,proj)` from `admin` and `plan`. They do not multiply a sparse matrix. ALPprolog can progress an agent and filter a belief state after a sensor reading. It does not build a `grb::Matrix`. The point of the repository is the gate between them. REQUIRE is that gate. A successful resolution does not mint a proof term. `not` is negation as failure. A failed branch must not leave its bindings for the next clause. The assembler now saves a mark for that reason. It has not been assembled, so that sentence is a description of the source, not a test result.
 
@@ -90,28 +90,28 @@ The picture is a teaching diagram. The numbers are not a test vector from `vxmex
 
 ALPprolog is here because an agent program is not a matrix. The maze strategy explores cells, cuts after each `do/1` so Prolog cannot undo an executed action, and stops when the agent and the gold share a cell. The stench fragment observes `stench` at cell 1 and adjoins `unsafe(2)` when the sensor axiom says so. Those programs need progression and sensing. A Horn clause that says `can(U,P)` does not update a belief state. Keeping the agent language in Prolog, next to the dialogue base, is the reason it was not rewritten in C++.
 
-The Lean file is a checked fragment of the speech-act rules, not a proof of the Prolog program. It defines a small inductive syntax: guide, visitor, guard, gold, route, threat, and six act forms. `native_decide` discharges the equations on that finite set. It does not import the dialogue knowledge base. It does not know about vaults, scripts, or `sample_script/1`. Moving it out of `alp-graphblas/include/alp/` was necessary because that directory is the C++ include root. A `.lean` file there is not a header.
+The Lean file is a checked fragment of the speech-act rules, not a proof of the Prolog program. It defines a small inductive syntax: guide, visitor, guard, gold, route, threat, and six act forms. `native_decide` discharges the equations on that finite set. It does not import the dialogue knowledge base. It does not know about vaults, scripts, or `sample_script/1`. Moving it out of `cpp/alp-graphblas/include/alp/` was necessary because that directory is the C++ include root. A `.lean` file there is not a header.
 
 ## What this repository contains
 
-The root is the harness. `alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `lean/` is the speech-act fragment. `src/` is the assembler. `docs/` holds the ABI note and the diagrams. `jcl/` holds the assemble and link job.
+The root is the harness. `cpp/alp-graphblas/` is a CMake project that can be configured and tested on its own. `prolog/` is the agent and dialogue layer. `lean/` is the speech-act fragment. `src/` is the assembler. `docs/` holds the ABI note and the diagrams. `jcl/` holds the assemble and link job.
 
-`alp-graphblas/src` is the C++ runtime. Terms, atoms, clauses, unification, a parser, a knowledge base, stratification, semi-naive evaluation, SLD with tabling, abduction, integrity constraints, provenance, and serialization live there. The graph side is a named directed graph, a CSR-style adjacency structure, a fixed-point closure, predicate bridges for `reachable/2`, and `src/graph/graphblas_backend.cpp`, which builds a Boolean matrix and closes it on `logical_or` and `logical_and` when ALP is enabled. `src/main.cpp` is the `alp` command. Programs in `alp-graphblas/alp/library` and `alp-graphblas/alp/examples` are the `.alp` sources: birds, wet grass, diagnosis, agent planning, and graph reachability.
+`cpp/alp-graphblas/src` is the C++ runtime. Terms, atoms, clauses, unification, a parser, a knowledge base, stratification, semi-naive evaluation, SLD with tabling, abduction, integrity constraints, provenance, and serialization live there. The graph side is a named directed graph, a CSR-style adjacency structure, a fixed-point closure, predicate bridges for `reachable/2`, and `src/graph/graphblas_backend.cpp`, which builds a Boolean matrix and closes it on `logical_or` and `logical_and` when ALP is enabled. `src/main.cpp` is the `alp` command. Programs in `cpp/alp-graphblas/alp/library` and `cpp/alp-graphblas/alp/examples` are the `.alp` sources: birds, wet grass, diagnosis, agent planning, and graph reachability.
 
-`alp-graphblas/tests` is the CTest suite. Unification, the parser, Horn derivation, integrity, abduction, the graph, and an integration test are always built. `test_graphblas` is built only when ALP is enabled. `tests/upstream` holds the two cases that existed only in SNAPKITTYWEST/alp-graphblas- at `0174adc`. The later tree was not replaced by that earlier cut. `upstream/snapkittywest/MERGE.md` records that choice.
+`cpp/alp-graphblas/tests` is the CTest suite. Unification, the parser, Horn derivation, integrity, abduction, the graph, and an integration test are always built. `test_graphblas` is built only when ALP is enabled. `tests/upstream` holds the two cases that existed only in SNAPKITTYWEST/alp-graphblas- at `0174adc`. The later tree was not replaced by that earlier cut. `upstream/snapkittywest/MERGE.md` records that choice.
 
-`prolog/alp_kernel.pl` is the recursive kernel: `holds/2`, `k_holds/2`, `exec/4`, `exec_online/5`, belief update, and a step ceiling of 64. Past the ceiling it throws `execution_limit_exceeded`. `prolog/alpprolog.pl` is the prime-implicate engine: `alp_run/1`, `?/1`, `do/1`, progression, sensing. `prolog/patrol.pl` is the left, middle, right domain. `prolog/sensing.pl` is the stench fragment. `prolog/maze.pl` is the four-cell gold strategy. `prolog/dialog_kb.pl` is the speech-act knowledge base, 5,441 lines, ending at `expanded_clauses_marker(3844)`. `prolog/speech_acts.pl` is the felicity layer: content, preparatory, sincerity, essential. `reply_sa/4` is `reply/4` plus `felicitous/1`. `prolog/queries/` holds goals for sensing, the maze, the ceiling, and one dialogue step that stores `gold_at` with `set_fluent`. Those goals have not been executed in this workspace.
+`prolog/kernel/alp_kernel.pl` is the recursive kernel: `holds/2`, `k_holds/2`, `exec/4`, `exec_online/5`, belief update, and a step ceiling of 64. Past the ceiling it throws `execution_limit_exceeded`. `prolog/engine/alpprolog.pl` is the prime-implicate engine: `alp_run/1`, `?/1`, `do/1`, progression, sensing. `prolog/patrol.pl` is the left, middle, right domain. `prolog/sensing.pl` is the stench fragment. `prolog/maze.pl` is the four-cell gold strategy. `prolog/dialogue/dialog_kb.pl` is the speech-act knowledge base, 5,441 lines, ending at `expanded_clauses_marker(3844)`. `prolog/dialogue/speech_acts.pl` is the felicity layer: content, preparatory, sincerity, essential. `reply_sa/4` is `reply/4` plus `felicitous/1`. `prolog/queries/` holds goals for sensing, the maze, the ceiling, and one dialogue step that stores `gold_at` with `set_fluent`. Those goals have not been executed in this workspace.
 
 `lean/SpeechActs.lean` is the fragment described above. `lean/lakefile.lean` names the library `SpeechActs`. It has not been built.
 
-`src/lexer/alplex.asm` scans a buffer and rejects a broken `:-`. `src/horn/hornres.asm` matches predicate and arity, unifies head arguments, resolves a body atom, treats a not-flag as negation as failure, and restores the binding stack on failure. Depth above 8 returns 72. `src/sparse/vxmexec.asm` is the CSR product. `src/alp/require.asm` calls the resolver and enters `VXMEXEC` only on return code 0. A resolution failure returns 32 and does not write the output. `docs/ABI.md` is the calling convention. `jcl/assemble.jcl` is the job. `examples/shortest.alp` is a leftover example from before the C++ tree. It is not an input to `alp-graphblas` unless it happens to parse. Prefer the examples under `alp-graphblas/alp/examples`.
+`asm/lexer/alplex.asm` scans a buffer and rejects a broken `:-`. `asm/horn/hornres.asm` matches predicate and arity, unifies head arguments, resolves a body atom, treats a not-flag as negation as failure, and restores the binding stack on failure. Depth above 8 returns 72. `asm/sparse/vxmexec.asm` is the CSR product. `asm/gate/require.asm` calls the resolver and enters `VXMEXEC` only on return code 0. A resolution failure returns 32 and does not write the output. `docs/ABI.md` is the calling convention. `jcl/assemble.jcl` is the job. `examples/legacy/shortest.alp` is a leftover example from before the C++ tree. It is not an input to the CMake project unless it happens to parse. Prefer the examples under `cpp/alp-graphblas/alp/examples`.
 
 ## How a build is supposed to work
 
 The C++ build is the only one that has run.
 
 ```sh
-cmake -S alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
+cmake -S cpp/alp-graphblas -B build -DALP_GRAPHBLAS_ENABLE=OFF
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
@@ -121,7 +121,7 @@ CMake 3.20 and a C++20 compiler are required. `-DALP_GRAPHBLAS_ENABLE=OFF` selec
 To build the backend:
 
 ```sh
-cmake -S alp-graphblas -B build -DALP_ROOT=/path/to/alp-install -DALP_GRAPHBLAS_ENABLE=ON
+cmake -S cpp/alp-graphblas -B build -DALP_ROOT=/path/to/alp-install -DALP_GRAPHBLAS_ENABLE=ON
 cmake --build build -j
 ctest --test-dir build --output-on-failure
 ```
@@ -131,7 +131,7 @@ ctest --test-dir build --output-on-failure
 The `alp` binary reads `.alp` files.
 
 ```sh
-./build/alp --query reachable(a,c) alp-graphblas/alp/examples/graph_reachability.alp
+./build/alp --query reachable(a,c) cpp/alp-graphblas/alp/examples/graph_reachability.alp
 ```
 
 Flags include `--query`, `--abduce`, `--all`, `--proof`, `--graph`, and `--backend auto|reference|graphblas`. `--backend graphblas` without the library is a configure-time failure, not a silent fallback, when the option is on. When the option is off, asking for that backend at run time throws.
@@ -183,7 +183,7 @@ The GraphBLAS backend has not been built in this repository's Actions. The archi
 
 The picture is a sketch of greet, ask, and tell, with a felicity check on the tell. It is not a trace.
 
-`prolog/speech_acts.pl` follows Searle's four conditions. Propositional content says what kind of formula the act may carry. A tell needs a proposition. An ask needs a question and a topic. Preparatory conditions say what must already be true: a teller must be competent on the topic of the formula, a clarify must come from someone who is not competent, an offer must not be believed prohibited. Sincerity says the speaker believes the content of a tell, and does not believe the content of a deny. Essential says the act counts as an attempt to get the hearer to recognise the point: truth, an answer, a transfer, contact, uptake, or end. `counts_as/3` only requires two distinct agents. It does not model recognition. `felicitous/1` is the conjunction. `reply_sa/4` drops a reply that fails it. `uptake/2` records common ground, not private belief. `perlocution/3` records the aim and does not execute it.
+`prolog/dialogue/speech_acts.pl` follows Searle's four conditions. Propositional content says what kind of formula the act may carry. A tell needs a proposition. An ask needs a question and a topic. Preparatory conditions say what must already be true: a teller must be competent on the topic of the formula, a clarify must come from someone who is not competent, an offer must not be believed prohibited. Sincerity says the speaker believes the content of a tell, and does not believe the content of a deny. Essential says the act counts as an attempt to get the hearer to recognise the point: truth, an answer, a transfer, contact, uptake, or end. `counts_as/3` only requires two distinct agents. It does not model recognition. `felicitous/1` is the conjunction. `reply_sa/4` drops a reply that fails it. `uptake/2` records common ground, not private belief. `perlocution/3` records the aim and does not execute it.
 
 The Lean fragment checks the finite slice. A guide who believes `locatedGold` and is competent on gold gets a felicitous tell. A visitor who does not believe it does not. An ask about gold to the guide is a tell, not a clarify. An ask about threat to the guide is a clarify, because the guide is not competent on threat in that file. Those are the theorems in `lean/SpeechActs.lean`.
 
@@ -215,7 +215,7 @@ Do not add a Python oracle. Do not pad the assembler to a line count. Do not des
 
 `provenance.cpp` records which rule or fact produced an atom, and which negative literals failed. It can detect a cyclic support and refuse it. It is a derivation record. It is not a natural-deduction proof term, and the repository does not call it one.
 
-`io/lexer.cpp` and `io/serialization.cpp` are the front and back of the C++ pipeline. The lexer is not `src/lexer/alplex.asm`. They do not share a token layout. Serializing a C++ knowledge base does not produce an assembler source member.
+`io/lexer.cpp` and `io/serialization.cpp` are the front and back of the C++ pipeline. The lexer is not `asm/lexer/alplex.asm`. They do not share a token layout. Serializing a C++ knowledge base does not produce an assembler source member.
 
 ## The graph layer
 
@@ -274,21 +274,23 @@ The three images in `docs/images/` were drawn for this README. They are not phot
 ## Layout after this organization
 
 ```text
-LICENSE                      AGPL-3.0-only grant
-README.md                    this file
-docs/ABI.md                  assembler convention
-docs/images/                 diagrams for this README
-jcl/assemble.jcl             ASMA90 job for ALPLEX
-src/lexer/alplex.asm
-src/horn/hornres.asm
-src/sparse/vxmexec.asm
-src/alp/require.asm
-prolog/                      kernel, prime-implicate engine, domains, dialogue
-prolog/queries/              unchecked goals
-lean/SpeechActs.lean         finite speech-act fragment
-lean/lakefile.lean
-alp-graphblas/               CMake project, tested without ALP
-examples/shortest.alp        leftover, not the supported example path
+LICENSE                         AGPL-3.0-only grant
+README.md                       this file
+docs/ABI.md                     assembler convention
+docs/images/                    diagrams for this README
+asm/lexer/alplex.asm            lexical scan
+asm/horn/hornres.asm            backward chaining
+asm/sparse/vxmexec.asm          semiring product
+asm/gate/require.asm            REQUIRE gate
+jcl/assemble.jcl                ASMA90 job for ALPLEX
+prolog/kernel/                  exec/4 and exec_online/5
+prolog/engine/                  prime-implicate do/1 and ?/1
+prolog/domains/                 patrol, sensing, maze
+prolog/dialogue/                knowledge base and felicity
+prolog/queries/                 unchecked goals
+lean/                           SpeechActs fragment and lakefile
+cpp/alp-graphblas/              CMake project, tested without ALP
+examples/legacy/shortest.alp    leftover, not the supported example path
 ```
 
 `dsects/` is not in the tree. The ABI document describes the layouts. The assembler members use numeric offsets that match that description. There is no assembled DSECT listing.
@@ -297,4 +299,4 @@ examples/shortest.alp        leftover, not the supported example path
 
 Copyright (C) 2026 Ahmad Ali Parr. Licensed under the GNU Affero General Public License version 3 only. The Affero clause matters if this program is modified and run as a network service: the corresponding source of that version must be offered to users who interact with it remotely. This repository does not run such a service. The obligation still attaches to anyone who does. Version 3 only means a later GPL is not a substitute. Apache-2.0 is not a dual license. A pull request that adds another license file without replacing this grant should be rejected.
 
-Authors recorded on the C++ subtree include Ahmad Ali Parr and SNAPKITTYWEST. The SNAPKITTYWEST cut that was merged is commit `0174adc` of `alp-graphblas-`. The later sources in `alp-graphblas/` came from the archive `alp-graphblas-final`. The speech-act Prolog and the Lean fragment were added after that. The assembler members were written in this repository.
+Authors recorded on the C++ subtree include Ahmad Ali Parr and SNAPKITTYWEST. The SNAPKITTYWEST cut that was merged is commit `0174adc` of `alp-graphblas-`. The later sources in `cpp/alp-graphblas/` came from the archive `alp-graphblas-final`. The speech-act Prolog and the Lean fragment were added after that. The assembler members were written in this repository.

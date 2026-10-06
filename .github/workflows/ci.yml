@@ -15,12 +15,12 @@ jobs:
             find . -name '*.py' -print >&2
             exit 1
           fi
-          test -f src/lexer/alplex.asm
-          test -f src/horn/hornres.asm
-          test -f src/sparse/vxmexec.asm
+          test -f asm/lexer/alplex.asm
+          test -f asm/horn/hornres.asm
+          test -f asm/sparse/vxmexec.asm
           test -f LICENSE
           grep -q 'AGPL-3.0-only' LICENSE
-          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' src/lexer/alplex.asm
-          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' src/horn/hornres.asm
-          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' src/sparse/vxmexec.asm
+          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' asm/lexer/alplex.asm
+          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' asm/horn/hornres.asm
+          grep -q 'SPDX-License-Identifier: AGPL-3.0-only' asm/sparse/vxmexec.asm
           echo 'tree check passed'

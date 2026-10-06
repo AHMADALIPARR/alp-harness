@@ -2,8 +2,8 @@
 % Copyright (C) 2026 Ahmad Ali Parr
 % GNU Affero General Public License version 3 only.
 %
-% Load after alp_kernel.pl.
-%   ?- [alp_kernel, queries/check_ceiling].
+% Load the kernel first.
+%   ?- [kernel/alp_kernel, queries/check_ceiling].
 %   ?- check_ceiling.
 
 check_ceiling :-

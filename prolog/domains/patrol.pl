@@ -6,7 +6,7 @@
 % Load the kernel first. Do not load this file together with maze.pl:
 % both define a domain, and this file uses holds/2 from the kernel.
 %
-%   ?- [alp_kernel, patrol].
+%   ?- [../kernel/alp_kernel, ../domains/patrol].
 %   ?- RealS0 = [at=left, battery=high],
 %      BS0 = [[at=left, battery=high], [at=left, battery=low]],
 %      exec_online(call(patrol), RealS0, BS0, FinalS, History).

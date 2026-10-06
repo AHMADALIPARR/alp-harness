@@ -2,8 +2,8 @@
 % Copyright (C) 2026 Ahmad Ali Parr
 % GNU Affero General Public License version 3 only.
 %
-% Load after alp_kernel.pl and dialog_kb.pl.
-%   ?- [alp_kernel, dialog_kb, queries/dialogue_step].
+% Load the kernel and the dialogue base. Do not load maze.pl.
+%   ?- [kernel/alp_kernel, dialogue/dialog_kb, queries/dialogue_step].
 %   ?- gold_exchange(Trace, S).
 %
 % The tell from reply/4 is stored with set_fluent, then exec_online sees it.

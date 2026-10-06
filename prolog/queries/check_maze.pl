@@ -2,8 +2,8 @@
 % Copyright (C) 2026 Ahmad Ali Parr
 % GNU Affero General Public License version 3 only.
 %
-% Load with alpprolog.pl and maze.pl. Do not load sensing.pl or patrol.pl.
-%   ?- [alpprolog, maze, queries/check_maze].
+% Load the engine and the maze domain. Do not load sensing.pl or patrol.pl.
+%   ?- [engine/alpprolog, domains/maze, queries/check_maze].
 %   ?- check_maze.
 
 check_maze :-
