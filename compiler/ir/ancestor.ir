@@ -1,0 +1,6 @@
+RULES 5
+RULE 0 HEAD parent(NodeA,NodeB) BODY []
+RULE 1 HEAD parent(NodeB,NodeC) BODY []
+RULE 2 HEAD father(?X,?Y) BODY [parent(?X,?Y)]
+RULE 3 HEAD ancestor(?X,?Y) BODY [parent(?X,?Y)]
+RULE 4 HEAD ancestor(?X,?Z) BODY [parent(?X,?Y),ancestor(?Y,?Z)]
